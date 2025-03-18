@@ -390,9 +390,7 @@ def create_ltx_video_pipeline(
     else:
         scheduler = RectifiedFlowScheduler.from_pretrained(ckpt_path)
 
-    text_encoder = T5EncoderModel.from_pretrained(
-        text_encoder_model_name_or_path, subfolder="text_encoder", torch_dtype=torch.bfloat16
-    )
+    text_encoder = T5EncoderModel.from_pretrained(text_encoder_model_name_or_path, subfolder="text_encoder", torch_dtype=torch.bfloat16, device_map="auto")
     patchifier = SymmetricPatchifier(patch_size=1)
     tokenizer = T5Tokenizer.from_pretrained(
         text_encoder_model_name_or_path, subfolder="tokenizer"
