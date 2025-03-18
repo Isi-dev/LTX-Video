@@ -423,10 +423,10 @@ def create_ltx_video_pipeline(
             prompt_enhancer_llm_model_name_or_path,
         )
     else:
-        prompt_enhancer_image_caption_model = None
-        prompt_enhancer_image_caption_processor = None
-        prompt_enhancer_llm_model = None
-        prompt_enhancer_llm_tokenizer = None
+        prompt_enhancer_image_caption_model = prompt_enhancer_image_caption_model
+        prompt_enhancer_image_caption_processor = prompt_enhancer_image_caption_processor
+        prompt_enhancer_llm_model = prompt_enhancer_llm_model
+        prompt_enhancer_llm_tokenizer = prompt_enhancer_llm_tokenizer
 
     vae = vae.to(torch.bfloat16)
     if precision == "bfloat16" and transformer.dtype != torch.bfloat16:
