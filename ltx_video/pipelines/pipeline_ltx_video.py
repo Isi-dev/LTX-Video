@@ -860,8 +860,7 @@ class LTXVideoPipeline(DiffusionPipeline):
         )
 
         if offload_to_cpu and self.text_encoder is not None:
-            # self.text_encoder = self.text_encoder.cpu()
-            del self.text_encoder
+            self.text_encoder = self.text_encoder.cpu()
             torch.cuda.empty_cache()
 
         self.transformer = self.transformer.to(self._execution_device)
