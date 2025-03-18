@@ -391,7 +391,7 @@ def create_ltx_video_pipeline(
         scheduler = RectifiedFlowScheduler.from_pretrained(ckpt_path)
 
     text_encoder = T5EncoderModel.from_pretrained(
-        text_encoder_model_name_or_path, subfolder="text_encoder"
+        text_encoder_model_name_or_path, subfolder="text_encoder", torch_dtype=torch.bfloat16
     )
     patchifier = SymmetricPatchifier(patch_size=1)
     tokenizer = T5Tokenizer.from_pretrained(
@@ -428,7 +428,7 @@ def create_ltx_video_pipeline(
     vae = vae.to(torch.bfloat16)
     if precision == "bfloat16" and transformer.dtype != torch.bfloat16:
         transformer = transformer.to(torch.bfloat16)
-    text_encoder = text_encoder.to(torch.bfloat16)
+    # text_encoder = text_encoder.to(torch.bfloat16)
 
     # Use submodels for the pipeline
     submodel_dict = {
@@ -628,9 +628,10 @@ def infer(
         image_cond_noise_scale=image_cond_noise_scale,
         decode_timestep=decode_timestep,
         decode_noise_scale=decode_noise_scale,
-        mixed_precision=(precision == "mixed_precision"),
+        mixed_precision=False,
         offload_to_cpu=offload_to_cpu,
         device=device,
+        lowVram = low_vram,
         enhance_prompt=enhance_prompt,
     ).images
 
