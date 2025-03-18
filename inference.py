@@ -441,10 +441,10 @@ def create_ltx_video_pipeline(
         "tokenizer": tokenizer,
         "scheduler": scheduler,
         "vae": vae,
-        # "prompt_enhancer_image_caption_model": prompt_enhancer_image_caption_model,
-        # "prompt_enhancer_image_caption_processor": prompt_enhancer_image_caption_processor,
-        # "prompt_enhancer_llm_model": prompt_enhancer_llm_model,
-        # "prompt_enhancer_llm_tokenizer": prompt_enhancer_llm_tokenizer,
+        "prompt_enhancer_image_caption_model": None,
+        "prompt_enhancer_image_caption_processor": None,
+        "prompt_enhancer_llm_model": None,
+        "prompt_enhancer_llm_tokenizer": None,
     }
 
     pipeline = LTXVideoPipeline(**submodel_dict)
