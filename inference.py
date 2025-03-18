@@ -404,7 +404,7 @@ def create_ltx_video_pipeline(
 
     # transformer = transformer.to(device)
     # vae = vae.to(device)
-    text_encoder = text_encoder.to(device)
+    # text_encoder = text_encoder.to(device)
 
     if enhance_prompt:
         prompt_enhancer_image_caption_model = AutoModelForCausalLM.from_pretrained(
