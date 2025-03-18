@@ -370,7 +370,7 @@ def create_ltx_video_pipeline(
     text_encoder_model_name_or_path: str,
     sampler: Optional[str] = None,
     device: Optional[str] = None,
-    lowVam: bool = False,
+    lowVram: bool = False,
     enhance_prompt: bool = False,
     prompt_enhancer_image_caption_model_name_or_path: Optional[str] = None,
     prompt_enhancer_llm_model_name_or_path: Optional[str] = None,
@@ -398,7 +398,7 @@ def create_ltx_video_pipeline(
         text_encoder_model_name_or_path, subfolder="tokenizer"
     )
 
-    if torch.cuda.is_available() and not lowVam:
+    if torch.cuda.is_available() and not lowVram:
         text_encoder = text_encoder.to(device)
     else:
         text_encoder = text_encoder.to("cpu")
@@ -448,7 +448,7 @@ def create_ltx_video_pipeline(
     }
 
     pipeline = LTXVideoPipeline(**submodel_dict)
-    if torch.cuda.is_available() and not lowVam:
+    if torch.cuda.is_available() and not lowVram:
         pipeline = pipeline.to("cuda")
     return pipeline
 
@@ -634,7 +634,6 @@ def infer(
         mixed_precision=False,
         offload_to_cpu=offload_to_cpu,
         device=device,
-        lowVram = low_vram,
         enhance_prompt=enhance_prompt,
     ).images
 
