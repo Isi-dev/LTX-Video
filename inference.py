@@ -390,20 +390,20 @@ def create_ltx_video_pipeline(
     else:
         scheduler = RectifiedFlowScheduler.from_pretrained(ckpt_path)
 
-    text_encoder = T5EncoderModel.from_pretrained(text_encoder_model_name_or_path, subfolder="text_encoder", torch_dtype=torch.bfloat16, device_map="auto")
+    text_encoder = T5EncoderModel.from_pretrained(text_encoder_model_name_or_path, subfolder="text_encoder")
     patchifier = SymmetricPatchifier(patch_size=1)
     tokenizer = T5Tokenizer.from_pretrained(
         text_encoder_model_name_or_path, subfolder="tokenizer"
     )
 
-    # if torch.cuda.is_available() and not lowVram:
-    #     text_encoder = text_encoder.to(device)
-    # else:
-    #     text_encoder = text_encoder.to("cpu")
-    #     text_encoder = text_encoder.to(dtype=torch.bfloat16, device="cpu")
+    if torch.cuda.is_available() and not lowVram:
+        text_encoder = text_encoder.to(device)
+    else:
+        text_encoder = text_encoder.to("cpu")
+        text_encoder = text_encoder.to(dtype=torch.bfloat16, device="cpu")
 
-    # transformer = transformer.to(device)
-    # vae = vae.to(device)
+    transformer = transformer.to(device)
+    vae = vae.to(device)
     # text_encoder = text_encoder.to(device)
 
     if enhance_prompt:
@@ -426,9 +426,9 @@ def create_ltx_video_pipeline(
         prompt_enhancer_llm_model = None
         prompt_enhancer_llm_tokenizer = None
 
-    # vae = vae.to(torch.bfloat16)
-    # if precision == "bfloat16" and transformer.dtype != torch.bfloat16:
-    #     transformer = transformer.to(torch.bfloat16)
+    vae = vae.to(torch.bfloat16)
+    if precision == "bfloat16" and transformer.dtype != torch.bfloat16:
+        transformer = transformer.to(torch.bfloat16)
     # text_encoder = text_encoder.to(torch.bfloat16)
 
     # Use submodels for the pipeline
@@ -446,8 +446,8 @@ def create_ltx_video_pipeline(
     }
 
     pipeline = LTXVideoPipeline(**submodel_dict)
-    # if torch.cuda.is_available() and not lowVram:
-    #     pipeline = pipeline.to("cuda")
+    if torch.cuda.is_available() and not lowVram:
+        pipeline = pipeline.to("cuda")
     return pipeline
 
 
