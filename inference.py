@@ -400,6 +400,9 @@ def create_ltx_video_pipeline(
 
     if torch.cuda.is_available() and not lowVam:
         text_encoder = text_encoder.to(device)
+    else:
+        text_encoder = text_encoder.to("cpu")
+        text_encoder = text_encoder.to(dtype=torch.bfloat16, device="cpu")
 
     transformer = transformer.to(device)
     vae = vae.to(device)
