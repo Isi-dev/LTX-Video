@@ -295,6 +295,11 @@ def main():
     )
 
     parser.add_argument(
+        "--low_vram",
+        action="store_true",
+    )
+
+    parser.add_argument(
         "--offload_to_cpu",
         action="store_true",
         help="Offloading unnecessary computations to CPU.",
@@ -365,6 +370,7 @@ def create_ltx_video_pipeline(
     text_encoder_model_name_or_path: str,
     sampler: Optional[str] = None,
     device: Optional[str] = None,
+    lowVam: bool = False,
     enhance_prompt: bool = False,
     prompt_enhancer_image_caption_model_name_or_path: Optional[str] = None,
     prompt_enhancer_llm_model_name_or_path: Optional[str] = None,
@@ -392,9 +398,12 @@ def create_ltx_video_pipeline(
         text_encoder_model_name_or_path, subfolder="tokenizer"
     )
 
+    if torch.cuda.is_available() and not lowVam:
+        text_encoder = text_encoder.to(device)
+
     transformer = transformer.to(device)
     vae = vae.to(device)
-    text_encoder = text_encoder.to(device)
+    # text_encoder = text_encoder.to(device)
 
     if enhance_prompt:
         prompt_enhancer_image_caption_model = AutoModelForCausalLM.from_pretrained(
@@ -429,14 +438,15 @@ def create_ltx_video_pipeline(
         "tokenizer": tokenizer,
         "scheduler": scheduler,
         "vae": vae,
-        "prompt_enhancer_image_caption_model": prompt_enhancer_image_caption_model,
-        "prompt_enhancer_image_caption_processor": prompt_enhancer_image_caption_processor,
-        "prompt_enhancer_llm_model": prompt_enhancer_llm_model,
-        "prompt_enhancer_llm_tokenizer": prompt_enhancer_llm_tokenizer,
+        # "prompt_enhancer_image_caption_model": prompt_enhancer_image_caption_model,
+        # "prompt_enhancer_image_caption_processor": prompt_enhancer_image_caption_processor,
+        # "prompt_enhancer_llm_model": prompt_enhancer_llm_model,
+        # "prompt_enhancer_llm_tokenizer": prompt_enhancer_llm_tokenizer,
     }
 
     pipeline = LTXVideoPipeline(**submodel_dict)
-    pipeline = pipeline.to(device)
+    if torch.cuda.is_available() and not lowVam:
+        pipeline = pipeline.to("cuda")
     return pipeline
 
 
@@ -461,6 +471,7 @@ def infer(
     decode_noise_scale: float,
     prompt: str,
     negative_prompt: str,
+    low_vram: bool,
     offload_to_cpu: bool,
     text_encoder_model_name_or_path: str,
     conditioning_media_paths: Optional[List[str]] = None,
@@ -549,6 +560,7 @@ def infer(
         text_encoder_model_name_or_path=text_encoder_model_name_or_path,
         sampler=sampler,
         device=kwargs.get("device", get_device()),
+        lowVram=low_vram,
         enhance_prompt=enhance_prompt,
         prompt_enhancer_image_caption_model_name_or_path=prompt_enhancer_image_caption_model_name_or_path,
         prompt_enhancer_llm_model_name_or_path=prompt_enhancer_llm_model_name_or_path,
