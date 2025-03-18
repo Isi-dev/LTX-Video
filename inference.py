@@ -629,7 +629,7 @@ def infer(
         image_cond_noise_scale=image_cond_noise_scale,
         decode_timestep=decode_timestep,
         decode_noise_scale=decode_noise_scale,
-        mixed_precision=False,
+        mixed_precision=(precision == "mixed_precision"),
         offload_to_cpu=offload_to_cpu,
         device=device,
         enhance_prompt=enhance_prompt,
