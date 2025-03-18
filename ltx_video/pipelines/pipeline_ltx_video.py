@@ -648,6 +648,13 @@ class LTXVideoPipeline(DiffusionPipeline):
 
         return samples
 
+    def _move_model_to_device(self, model, device):
+        """Helper function to move a model to the specified device."""
+        if device != "cpu":
+            model.to(device)
+            
+        return model
+
     @torch.no_grad()
     def __call__(
         self,
@@ -828,6 +835,8 @@ class LTXVideoPipeline(DiffusionPipeline):
                 max_new_tokens=text_encoder_max_tokens,
             )
 
+        
+
         # 3. Encode input prompt
         if self.text_encoder is not None:
             self.text_encoder = self.text_encoder.to(self._execution_device)
@@ -851,7 +860,9 @@ class LTXVideoPipeline(DiffusionPipeline):
         )
 
         if offload_to_cpu and self.text_encoder is not None:
-            self.text_encoder = self.text_encoder.cpu()
+            # self.text_encoder = self.text_encoder.cpu()
+            del self.text_encoder
+            torch.cuda.empty_cache()
 
         self.transformer = self.transformer.to(self._execution_device)
 
@@ -1078,6 +1089,8 @@ class LTXVideoPipeline(DiffusionPipeline):
             self.transformer = self.transformer.cpu()
             if self._execution_device == "cuda":
                 torch.cuda.empty_cache()
+
+        self.vae = self._move_model_to_device(self.vae, device)
 
         # Remove the added conditioning latents
         latents = latents[:, num_cond_latents:]
